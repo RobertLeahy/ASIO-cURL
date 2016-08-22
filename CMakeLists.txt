@@ -41,7 +41,9 @@ else()
 endif()
 
 add_library(asiocurl SHARED
+	src/exception.cpp
 )
+target_link_libraries(asiocurl curl curldll)
 
 add_executable(tests
 	src/test/main.cpp
