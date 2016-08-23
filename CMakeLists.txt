@@ -42,6 +42,7 @@ endif()
 
 add_library(asiocurl SHARED
 	src/exception.cpp
+	src/init.cpp
 )
 target_link_libraries(asiocurl curl curldll)
 
