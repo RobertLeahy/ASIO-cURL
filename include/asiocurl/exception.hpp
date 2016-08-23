@@ -29,6 +29,21 @@ namespace asiocurl {
 
 
 	/**
+	 *	Indicates that a transfer was aborted.
+	 */
+	class aborted : public error {
+
+
+		public:
+
+
+			aborted ();
+
+
+	};
+
+
+	/**
 	 *	Represents an exception caused by the libcurl
 	 *	multi interface.  Specifically an exception of
 	 *	this type wraps a CURLMcode.
