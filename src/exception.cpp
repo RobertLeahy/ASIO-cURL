@@ -18,4 +18,17 @@ namespace asiocurl {
 	}
 
 
+	easy_error::easy_error (CURLcode code) : error(curl_easy_strerror(code)), code_(code) {	}
+
+
+	easy_error::easy_error (CURLcode code, const std::string & msg) : error(msg), code_(code) {	}
+
+
+	CURLcode easy_error::code () const noexcept {
+
+		return code_;
+
+	}
+
+
 }

@@ -8,6 +8,7 @@
 
 #include <curl/curl.h>
 #include <stdexcept>
+#include <string>
 
 
 namespace asiocurl {
@@ -82,6 +83,60 @@ namespace asiocurl {
 			 *		A CURLMcode.
 			 */
 			CURLMcode code () const noexcept;
+
+
+	};
+
+
+	/**
+	 *	Represents an exception caused by the libcurl easy
+	 *	interface.  Specifically an exception of this type
+	 *	wraps a CURLcode.
+	 */
+	class easy_error : public error {
+
+
+		private:
+
+
+			CURLcode code_;
+
+
+		public:
+
+
+			easy_error () = delete;
+
+
+			/**
+			 *	Creates an easy_error which represents a certain
+			 *	CURLcode value.
+			 *
+			 *	\param [in] code
+			 *		The CURLcode value which the created object shall
+			 *		represent.
+			 */
+			explicit easy_error (CURLcode code);
+			/**
+			 *	Creates an easy_error which represents a certain
+			 *	CURLcode value and which has a custom error message.
+			 *
+			 *	\param [in] code
+			 *		The CURLcode value which the created object shall
+			 *		represent.
+			 *	\param [in] msg
+			 *		A custom error message.
+			 */
+			easy_error (CURLcode code, const std::string & msg);
+
+
+			/**
+			 *	Retrieves the CURLcode which this object represents.
+			 *
+			 *	\return
+			 *		A CURLcode.
+			 */
+			CURLcode code () const noexcept;
 
 
 	};
