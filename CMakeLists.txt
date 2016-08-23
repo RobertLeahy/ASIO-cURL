@@ -47,6 +47,7 @@ target_link_libraries(asiocurl curl curldll)
 
 add_executable(tests
 	src/test/main.cpp
+	src/test/scope.cpp
 )
 target_link_libraries(tests asiocurl)
 
