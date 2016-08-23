@@ -43,8 +43,12 @@ endif()
 add_library(asiocurl SHARED
 	src/exception.cpp
 	src/init.cpp
+	src/io_service.cpp
 )
-target_link_libraries(asiocurl curl curldll)
+target_link_libraries(asiocurl curl curldll boost_system)
+if (WIN32)
+	target_link_libraries(asiocurl ws2_32)
+endif()
 
 add_executable(tests
 	src/test/main.cpp
