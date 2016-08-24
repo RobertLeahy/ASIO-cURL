@@ -221,6 +221,21 @@ namespace asiocurl {
 			bool remove (CURL * easy) noexcept;
 
 
+			/**
+			 *	Returns the boost::asio::io_service associated with this
+			 *	object.
+			 *
+			 *	This method is named get_io_service rather than io_service
+			 *	(which would be in keeping with standard library naming
+			 *	conventions) for consistency with other classes in Boost.ASIO
+			 *	which use the name get_io_service.
+			 *
+			 *	\return
+			 *		A reference to the associated boost::asio::io_service.
+			 */
+			boost::asio::io_service & get_io_service () const noexcept;
+
+
 	};
 
 

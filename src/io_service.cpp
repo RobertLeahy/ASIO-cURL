@@ -439,4 +439,11 @@ namespace asiocurl {
 	}
 
 
+	boost::asio::io_service & io_service::get_io_service () const noexcept {
+
+		return ios_;
+
+	}
+
+
 }
