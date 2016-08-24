@@ -77,7 +77,7 @@ namespace asiocurl {
 
 					CURL * easy;
 					std::exception_ptr ex;
-					promise<CURLMsg> promise;
+					asiocurl::promise<CURLMsg> promise;
 
 
 					easy_state () = delete;
