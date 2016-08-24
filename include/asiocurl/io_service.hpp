@@ -170,6 +170,35 @@ namespace asiocurl {
 			future<CURLMsg> add (CURL * easy);
 
 
+			/**
+			 *	Removes a curl easy handle from the io_service.
+			 *
+			 *	Once this call completes the io_service will no longer
+			 *	use the easy handle.
+			 *
+			 *	Note that the io_service does not reset any options it has
+			 *	set on the easy handle.  Accordingly reusing the easy handle
+			 *	without calling curl_easy_reset on it leads to undefined behaviour
+			 *	unless the new transfer is handled through the same io_service.
+			 *
+			 *	If \em easy was never added to this io_service, or if the
+			 *	transfer has completed, nothing happens.
+			 *
+			 *	Note that it is not necessary to call this function after
+			 *	a transfer completes: In this instance the easy handle is
+			 *	automatically disassociated from the io_service.
+			 *
+			 *	\param [in] easy
+			 *		The easy handle to disassociate from the io_service.
+			 *
+			 *	\return
+			 *		\em true if \em easy was disassociated from the
+			 *		io_service, \em false if \em easy was not associated
+			 *		with the io_service.
+			 */
+			bool remove (CURL * easy) noexcept;
+
+
 	};
 
 

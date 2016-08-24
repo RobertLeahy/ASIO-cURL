@@ -426,4 +426,17 @@ namespace asiocurl {
 	}
 
 
+	bool io_service::remove (CURL * easy) noexcept {
+
+		auto l=control_->lock();
+
+		auto iter=handles_.find(easy);
+		if (iter==handles_.end()) return false;
+
+		abort(iter);
+		return true;
+
+	}
+
+
 }
