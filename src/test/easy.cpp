@@ -62,6 +62,8 @@ SCENARIO_METHOD(fixture,"asiocurl::easy_with_error_buffer captures detailed erro
 		const char * str="http://foo.corge";	//	NXDOMAIN
 		auto result=curl_easy_setopt(easy,CURLOPT_URL,str);
 		if (result!=CURLE_OK) throw asiocurl::easy_error(result);
+		long v=1;
+		if ((result=curl_easy_setopt(easy,CURLOPT_VERBOSE,v))!=CURLE_OK) throw asiocurl::easy_error(result);
 
 		WHEN("The transfer is started") {
 
