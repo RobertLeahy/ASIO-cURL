@@ -73,7 +73,7 @@ namespace asiocurl {
 		:	what(CURL_POLL_NONE),
 			read(false),
 			write(false),
-			closed(false),
+			closed(std::make_shared<bool>(false)),
 			socket(ios)
 	{
 
@@ -108,26 +108,11 @@ namespace asiocurl {
 
 		auto & self=*static_cast<io_service *>(clientp);
 
-		//	This should always be found and should never
-		//	throw
 		auto iter=self.sockets_.find(item);
-		auto & ss=iter->second;
-		ss.closed=true;
-
-		int retr=0;
-		try {
-
-			ss.socket.close();
-
-		} catch (...) {
-
-			retr=1;
-
-		}
-
-		self.remove_socket(iter);
-
-		return retr;
+		*iter->second.closed=true;
+		self.sockets_.erase(iter);
+		
+		return 0;
 
 	}
 
@@ -250,21 +235,6 @@ namespace asiocurl {
 	}
 
 
-	void io_service::remove_socket (sockets_type::iterator iter) noexcept {
-
-		auto & ss=iter->second;
-
-		//	Still waiting on a callback to complete
-		if (ss.read) return;
-		if (ss.write) return;
-		//	Still waiting on libcurl to close the socket
-		if (!ss.closed) return;
-
-		sockets_.erase(iter);
-
-	}
-
-
 	void io_service::abort (easy_state & s) noexcept {
 
 		std::exception_ptr ex=s.ex;
@@ -314,22 +284,16 @@ namespace asiocurl {
 
 	void io_service::read (socket_state & ss) {
 
-		ss.socket.async_read_some(boost::asio::null_buffers{},[&,control=control_] (const auto & ec, auto) {
+		ss.socket.async_read_some(boost::asio::null_buffers{},[&,control=control_,closed=ss.closed] (const auto & ec, auto) {
 
 			auto l=control->lock();
 			if (!*control) return;
+			if (*closed) return;
 			ss.read=false;
-			auto handle=ss.socket.native_handle();
-			if (ss.closed) {
-
-				this->remove_socket(this->sockets_.find(handle));
-				return;
-
-			}
 
 			int mask=CURL_CSELECT_IN;
 			if (ec) mask|=CURL_CSELECT_ERR;
-			this->do_action(handle,mask);
+			this->do_action(ss.socket.native_handle(),mask);
 
 		});
 		ss.read=true;
@@ -339,22 +303,16 @@ namespace asiocurl {
 
 	void io_service::write (socket_state & ss) {
 
-		ss.socket.async_write_some(boost::asio::null_buffers{},[&,control=control_] (const auto & ec, auto) {
+		ss.socket.async_write_some(boost::asio::null_buffers{},[&,control=control_,closed=ss.closed] (const auto & ec, auto) {
 
 			auto l=control->lock();
 			if (!*control) return;
+			if (*closed) return;
 			ss.write=false;
-			auto handle=ss.socket.native_handle();
-			if (ss.closed) {
-
-				this->remove_socket(this->sockets_.find(handle));
-				return;
-
-			}
 
 			int mask=CURL_CSELECT_OUT;
 			if (ec) mask|=CURL_CSELECT_ERR;
-			this->do_action(handle,mask);
+			this->do_action(ss.socket.native_handle(),mask);
 
 		});
 		ss.write=true;

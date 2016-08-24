@@ -106,7 +106,7 @@ namespace asiocurl {
 					int what;
 					bool read;
 					bool write;
-					bool closed;
+					std::shared_ptr<bool> closed;
 					boost::asio::ip::tcp::socket socket;
 
 
@@ -140,7 +140,6 @@ namespace asiocurl {
 
 
 			void do_action (curl_socket_t, int);
-			void remove_socket (sockets_type::iterator) noexcept;
 			void abort (easy_state &) noexcept;
 			void abort (handles_type::iterator) noexcept;
 			void complete (CURLMsg) noexcept;
