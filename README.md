@@ -29,7 +29,7 @@ To use ASIO cURL you must:
 3. Create and setup a libcurl easy handle
 4. Call `asiocurl::io_service::add` and pass the easy handle from 3
 5. Ensure `boost::asio::io_service::run`, `boost::asio::io_service::run_one`, `boost::asio::io_service::poll`, and/or `boost::asio::io_service::poll_one` are being called
-6. Wait on the future from 3 to get a `CURLMsg` structure which represents the final result of your transfer
+6. Wait on the future from 4 to get a `CURLMsg` structure which represents the final result of your transfer
 
 ## Example
 
