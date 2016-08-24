@@ -50,9 +50,9 @@ add_library(asiocurl SHARED
 	src/init.cpp
 	src/io_service.cpp
 )
-target_link_libraries(asiocurl curl curldll boost_system)
+target_link_libraries(asiocurl curl boost_system)
 if (WIN32)
-	target_link_libraries(asiocurl ws2_32)
+	target_link_libraries(asiocurl curldll ws2_32)
 endif()
 if(DEFINED USE_BOOST_FUTURE AND USE_BOOST_FUTURE)
 	target_link_libraries(asiocurl boost_thread)
