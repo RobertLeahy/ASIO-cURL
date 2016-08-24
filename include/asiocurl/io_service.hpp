@@ -180,7 +180,21 @@ namespace asiocurl {
 			 *
 			 *	The io_service does not assume ownership of the easy handle
 			 *	and the easy handle must remain valid until the io_service
-			 *	is done with it.
+			 *	is done with it or the behaviour is undefined.
+			 *
+			 *	Once the returned future completes the io_service no longer
+			 *	requires the easy handle's lifetime to persist.  At this point
+			 *	only four things may be safely done with the easy handle:
+			 *
+			 *	-	curl_easy_reset
+			 *	-	curl_easy_cleanup
+			 *	-	curl_easy_getinfo
+			 *	-	A series of curl API calls with the purpose of reusing
+			 *		the easy handle where the new transfer is performed by
+			 *		adding the handle back to this same io_service
+			 *
+			 *	Doing anything else with the easy handle at this point leads to
+			 *	undefined behaviour.
 			 *
 			 *	\param [in] easy
 			 *		The easy handle to add to the io_service.
