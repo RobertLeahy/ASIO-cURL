@@ -68,6 +68,9 @@ if((DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug") OR (DEFINED 
 		src/test/scope.cpp
 	)
 	target_link_libraries(tests asiocurl)
+	if(NOT WIN32)
+		target_link_libraries(tests pthread)
+	endif()
 	add_custom_target(tests_run ALL
 		COMMAND tests
 		DEPENDS tests
