@@ -1,0 +1,34 @@
+language: cpp
+dist: trusty
+compiler:
+    -   gcc
+os:
+    -   linux
+sudo: required
+matrix:
+    exclude:
+        -   os: linux
+    include:
+        -   os: linux
+            env: USE_BOOST_FUTURE=1
+            compiler: gcc
+        -   os: linux
+            env: USE_BOOST_FUTURE=0
+            compiler: gcc
+addons:
+    apt:
+        packages:
+            -   g++-5
+            -   gcc-5
+            -   libboost-all-dev
+            -   libcurl4-openssl-dev
+        sources:
+            -   ubuntu-toolchain-r-test
+before_install:
+    -   sudo rm /usr/bin/g++
+    -   sudo ln -s /usr/bin/g++-5 /usr/bin/g++
+    -   git clone https://github.com/philsquared/Catch.git
+    -   sudo cp ./Catch/single_include/catch.hpp /usr/local/include
+script:
+    -   cmake . -DCMAKE_BUILD_TYPE=Debug -DUSE_BOOST_FUTURE=${USE_BOOST_FUTURE}
+    -   make VERBOSE=1
