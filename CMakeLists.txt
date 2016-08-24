@@ -40,9 +40,11 @@ else()
 	add_compile_options(-O2)
 endif()
 
-if(DEFINED USE_BOOST_FUTURE AND USE_BOOST_FUTURE)
-	add_definitions(-DASIOCURL_USE_BOOST_FUTURE -DBOOST_THREAD_PROVIDES_FUTURE)
+if(NOT DEFINED USE_BOOST_FUTURE)
+	set(USE_BOOST_FUTURE 1)
 endif()
+
+configure_file(src/configure.hpp.in include/asiocurl/configure.hpp)
 
 add_library(asiocurl SHARED
 	src/easy.cpp
@@ -54,7 +56,7 @@ target_link_libraries(asiocurl curl boost_system)
 if (WIN32)
 	target_link_libraries(asiocurl curldll ws2_32)
 endif()
-if(DEFINED USE_BOOST_FUTURE AND USE_BOOST_FUTURE)
+if(USE_BOOST_FUTURE)
 	target_link_libraries(asiocurl boost_thread)
 endif()
 

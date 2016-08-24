@@ -80,7 +80,7 @@ cmake -G "MinGW Makefiles" .
 make
 ```
 
-If you prefer to use `boost::future` rather than `std::future` call CMake with `-DUSE_BOOST_FUTURE=1`.  If you do this you **must** `#define ASIOCURL_USE_BOOST_FUTURE` before including any ASIO cURL headers when using the library.
+If you prefer to use `boost::future` rather than `std::future` call CMake with `-DUSE_BOOST_FUTURE=1`.
 
 If you would like to build and run the tests call CMake with `-DBUILD_TESTS=1`.  The tests add [Catch](https://github.com/philsquared/Catch) as a dependency.  The tests will be built and run automatically if you build in debug mode.
 

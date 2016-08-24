@@ -1,0 +1,6 @@
+#pragma once
+
+
+#if ${USE_BOOST_FUTURE}
+#define ASIOCURL_USE_BOOST_FUTURE
+#endif

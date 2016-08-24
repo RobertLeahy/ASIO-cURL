@@ -1,3 +1,4 @@
+#include <asiocurl/configure.hpp>
 #include <asiocurl/exception.hpp>
 #include <asiocurl/future.hpp>
 #include <asiocurl/io_service.hpp>
