@@ -41,6 +41,7 @@ else()
 endif()
 
 add_library(asiocurl SHARED
+	src/easy.cpp
 	src/exception.cpp
 	src/init.cpp
 	src/io_service.cpp
