@@ -1,4 +1,4 @@
-# ASIO cURL ![Travis Build Status](https://travis-ci.org/RobertLeahy/ASIO-cURL.svg?branch=travis)
+# ASIO cURL [![Build Status](https://travis-ci.org/RobertLeahy/ASIO-cURL.svg?branch=master)](https://travis-ci.org/RobertLeahy/ASIO-cURL)
 
 ASIO cURL is a C++14 library which provides asynchronous access to the facilities of [libcurl](https://curl.haxx.se/libcurl/) using [Boost.ASIO](http://www.boost.org/doc/libs/1_61_0/doc/html/boost_asio.html).
 
