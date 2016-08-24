@@ -25,6 +25,15 @@ namespace asiocurl {
 	class io_service {
 
 
+		public:
+
+
+			/**
+			 *	The type of a curl multi handle.
+			 */
+			using native_handle_type=CURLM *;
+
+
 		private:
 
 
@@ -115,7 +124,7 @@ namespace asiocurl {
 
 
 			boost::asio::io_service & ios_;
-			CURLM * handle_;
+			native_handle_type handle_;
 			using handles_type=std::unordered_map<CURL *,easy_state>;
 			handles_type handles_;
 			using sockets_type=std::unordered_map<curl_socket_t,socket_state>;
@@ -248,6 +257,16 @@ namespace asiocurl {
 			 *		A reference to the associated boost::asio::io_service.
 			 */
 			boost::asio::io_service & get_io_service () const noexcept;
+
+
+			/**
+			 *	Retrieves the curl multi handle this io_service object
+			 *	wraps.
+			 *
+			 *	\return
+			 *		A curl multi handle.
+			 */
+			native_handle_type native_handle () const noexcept;
 
 
 	};

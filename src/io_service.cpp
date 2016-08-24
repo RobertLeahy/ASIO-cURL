@@ -446,4 +446,11 @@ namespace asiocurl {
 	}
 
 
+	io_service::native_handle_type io_service::native_handle () const noexcept {
+
+		return handle_;
+
+	}
+
+
 }
