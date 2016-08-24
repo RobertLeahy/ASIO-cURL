@@ -58,17 +58,18 @@ if(DEFINED USE_BOOST_FUTURE AND USE_BOOST_FUTURE)
 	target_link_libraries(asiocurl boost_thread)
 endif()
 
-add_executable(tests
-	src/test/easy.cpp
-	src/test/io_service.cpp
-	src/test/main.cpp
-	src/test/scope.cpp
-)
-target_link_libraries(tests asiocurl)
-
-add_custom_target(tests_run ALL
-	COMMAND tests
-	DEPENDS tests
-	WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-	COMMENT "Run test suite"
-)
+if((DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug") OR (DEFINED BUILD_TESTS AND BUILD_TESTS))
+	add_executable(tests
+		src/test/easy.cpp
+		src/test/io_service.cpp
+		src/test/main.cpp
+		src/test/scope.cpp
+	)
+	target_link_libraries(tests asiocurl)
+	add_custom_target(tests_run ALL
+		COMMAND tests
+		DEPENDS tests
+		WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+		COMMENT "Run test suite"
+	)
+endif()
