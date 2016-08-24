@@ -6,7 +6,6 @@
 #include <exception>
 #include <memory>
 #include <stdexcept>
-#include <thread>
 #include <tuple>
 #include <utility>
 
