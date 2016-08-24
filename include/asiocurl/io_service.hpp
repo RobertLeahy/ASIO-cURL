@@ -149,9 +149,29 @@ namespace asiocurl {
 			io_service & operator = (io_service &&) = delete;
 
 
+			/**
+			 *	Creates a new io_service which uses a certain
+			 *	boost::asio::io_service for socket I/O and timeouts.
+			 *
+			 *	\param [in] ios
+			 *		The boost::asio::io_service with which this io_service
+			 *		shall be associated.  This reference must remain valid
+			 *		for the lifetime of the io_service or the behaviour is
+			 *		undefined.
+			 */
 			explicit io_service (boost::asio::io_service & ios);
 
 
+			/**
+			 *	Shuts the io_service down.
+			 *
+			 *	Any pending transfers will be immediately aborted.
+			 *
+			 *	Any pending asynchronous operations will be cancelled.  When
+			 *	those pending operations complete they will be no ops (i.e.
+			 *	it is not necessary to drain the boost::asio::io_service before
+			 *	calling this destructor).
+			 */
 			~io_service () noexcept;
 
 
