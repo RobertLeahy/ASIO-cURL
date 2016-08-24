@@ -52,6 +52,7 @@ if (WIN32)
 endif()
 
 add_executable(tests
+	src/test/io_service.cpp
 	src/test/main.cpp
 	src/test/scope.cpp
 )
