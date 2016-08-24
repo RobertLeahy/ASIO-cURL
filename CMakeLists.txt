@@ -20,7 +20,7 @@ include_directories(include)
 #	General command line arguments to the compiler that should be present
 #	on all platforms
 add_compile_options(-std=c++1z)
-if(DEFINED RELEASE AND RELEASE)
+if(DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Release")
 	add_compile_options(-O2)
 else()
 	add_compile_options(-O0 -g -fno-inline -fno-omit-frame-pointer -Wall -Wpedantic -Wextra -Werror)
