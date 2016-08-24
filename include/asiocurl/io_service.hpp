@@ -34,7 +34,8 @@ namespace asiocurl {
 				private:
 
 
-					mutable std::mutex m_;
+					using mutex_type=std::recursive_mutex;
+					mutable mutex_type m_;
 					bool stop_;
 
 
@@ -50,7 +51,8 @@ namespace asiocurl {
 					control ();
 
 
-					std::unique_lock<std::mutex> lock () const noexcept;
+					using guard_type=std::unique_lock<mutex_type>;
+					guard_type lock () const noexcept;
 					explicit operator bool () const noexcept;
 					void stop () noexcept;
 

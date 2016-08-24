@@ -31,9 +31,9 @@ namespace asiocurl {
 	io_service::control::control () : stop_(false) {	}
 
 
-	std::unique_lock<std::mutex> io_service::control::lock () const noexcept {
+	io_service::control::guard_type io_service::control::lock () const noexcept {
 
-		return std::unique_lock<std::mutex>(m_);
+		return guard_type(m_);
 
 	}
 
