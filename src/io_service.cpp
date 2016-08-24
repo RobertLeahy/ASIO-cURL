@@ -153,6 +153,22 @@ namespace asiocurl {
 
 	int io_service::socket (CURL * easy, curl_socket_t socket, int what, void * userp, void *) noexcept {
 
+		switch (what) {
+
+			case CURL_POLL_OUT:
+			case CURL_POLL_IN:
+			case CURL_POLL_INOUT:
+				break;
+			//	Apparently libcurl will sometimes call this function
+			//	with CURL_POLL_REMOVE after it closes the socket
+			//
+			//	This violates the assumption we make below (i.e. that
+			//	the socket-in-question is valid)
+			default:
+				return 0;
+
+		}
+
 		auto & self=*static_cast<io_service *>(userp);
 		auto & s=self.handles_.find(easy)->second;
 		auto & ss=self.sockets_.find(socket)->second;
