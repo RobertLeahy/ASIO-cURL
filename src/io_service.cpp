@@ -208,7 +208,7 @@ namespace asiocurl {
 			}
 
 			self.timer_.expires_from_now(boost::posix_time::millisec(timeout_ms));
-			self.timer_.async_wait([&self,control=self.control_] (const auto &) noexcept {
+			self.timer_.async_wait([&self,control=self.control_] (const auto &) {
 
 				auto l=control->lock();
 				if (!*control) return;
@@ -225,7 +225,7 @@ namespace asiocurl {
 	}
 
 
-	void io_service::do_action (curl_socket_t socket, int mask) noexcept {
+	void io_service::do_action (curl_socket_t socket, int mask) {
 
 		for (;;) {
 
@@ -233,7 +233,6 @@ namespace asiocurl {
 			auto result=curl_multi_socket_action(handle_,socket,mask,&ignored);
 			if (result==CURLM_CALL_MULTI_PERFORM) continue;
 			if (result==CURLM_OK) break;
-			//	TODO: This is throwing into noexcept right now
 			throw multi_error(result);
 
 		}
@@ -315,7 +314,7 @@ namespace asiocurl {
 
 	void io_service::read (socket_state & ss) {
 
-		ss.socket.async_read_some(boost::asio::null_buffers{},[&,control=control_] (const auto & ec, auto) noexcept {
+		ss.socket.async_read_some(boost::asio::null_buffers{},[&,control=control_] (const auto & ec, auto) {
 
 			auto l=control->lock();
 			if (!*control) return;
@@ -340,7 +339,7 @@ namespace asiocurl {
 
 	void io_service::write (socket_state & ss) {
 
-		ss.socket.async_write_some(boost::asio::null_buffers{},[&,control=control_] (const auto & ec, auto) noexcept {
+		ss.socket.async_write_some(boost::asio::null_buffers{},[&,control=control_] (const auto & ec, auto) {
 
 			auto l=control->lock();
 			if (!*control) return;

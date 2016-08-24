@@ -139,7 +139,7 @@ namespace asiocurl {
 			static int timer (CURLM *, long, void *) noexcept;
 
 
-			void do_action (curl_socket_t, int) noexcept;
+			void do_action (curl_socket_t, int);
 			void remove_socket (sockets_type::iterator) noexcept;
 			void abort (easy_state &) noexcept;
 			void abort (handles_type::iterator) noexcept;
