@@ -40,6 +40,10 @@ else()
 	endif()
 endif()
 
+if(DEFINED USE_BOOST_FUTURE AND USE_BOOST_FUTURE)
+	add_definitions(-DASIOCURL_USE_BOOST_FUTURE -DBOOST_THREAD_PROVIDES_FUTURE)
+endif()
+
 add_library(asiocurl SHARED
 	src/easy.cpp
 	src/exception.cpp
@@ -49,6 +53,9 @@ add_library(asiocurl SHARED
 target_link_libraries(asiocurl curl curldll boost_system)
 if (WIN32)
 	target_link_libraries(asiocurl ws2_32)
+endif()
+if(DEFINED USE_BOOST_FUTURE AND USE_BOOST_FUTURE)
+	target_link_libraries(asiocurl boost_thread)
 endif()
 
 add_executable(tests

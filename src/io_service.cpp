@@ -1,4 +1,5 @@
 #include <asiocurl/exception.hpp>
+#include <asiocurl/future.hpp>
 #include <asiocurl/io_service.hpp>
 #include <asiocurl/scope.hpp>
 #include <boost/asio.hpp>
@@ -10,7 +11,33 @@
 #include <utility>
 
 
+#ifdef ASIOCURL_USE_BOOST_FUTURE
+#include <boost/exception_ptr.hpp>
+#include <boost/exception/enable_current_exception.hpp>
+#endif
+
+
 namespace asiocurl {
+
+
+	template <typename T>
+	static void set_exception (promise<T> & p, std::exception_ptr ex) noexcept {
+
+		#ifdef ASIOCURL_USE_BOOST_FUTURE
+		try {
+
+			std::rethrow_exception(std::move(ex));
+
+		} catch (...) {
+
+			p.set_exception(boost::current_exception());
+
+		}
+		#else
+		p.set_exception(std::move(ex));
+		#endif
+
+	}
 
 
 	static void multi_check (CURLMcode code) {
@@ -255,7 +282,11 @@ namespace asiocurl {
 		std::exception_ptr ex=s.ex;
 		if (!ex) try {
 
+			#ifdef ASIOCURL_USE_BOOST_FUTURE
+			throw boost::enable_current_exception(aborted{});
+			#else
 			ex=std::make_exception_ptr(aborted{});
+			#endif
 
 		} catch (...) {
 
@@ -263,7 +294,7 @@ namespace asiocurl {
 
 		}
 
-		s.promise.set_exception(std::move(ex));
+		set_exception(s.promise,std::move(ex));
 
 		//	This may throw into noexcept, it should never happen
 		//	as far as I'm concerned, but it's better to fail
@@ -290,7 +321,7 @@ namespace asiocurl {
 
 		auto iter=handles_.find(msg.easy_handle);
 		auto & s=iter->second;
-		if (s.ex) s.promise.set_exception(std::move(s.ex));
+		if (s.ex) set_exception(s.promise,std::move(s.ex));
 		else s.promise.set_value(msg);
 		handles_.erase(iter);
 
