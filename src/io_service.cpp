@@ -79,7 +79,7 @@ namespace asiocurl {
 	}
 
 
-	io_service::easy_state::easy_state (CURL * easy) : easy(easy) {	}
+	io_service::easy_state::easy_state (CURL * e) : easy(e) {	}
 
 
 	void io_service::easy_state::set_exception () noexcept {
