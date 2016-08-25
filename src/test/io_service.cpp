@@ -141,6 +141,12 @@ SCENARIO_METHOD(fixture,"asiocurl::io_service::add rejects duplicate easy handle
 
 				CHECK_THROWS_AS(curl.add(easy),std::logic_error);
 
+				AND_THEN("The handle is still managed by the asiocurl::io_service") {
+
+					CHECK(curl.remove(easy));
+
+				}
+
 			}
 
 		}

@@ -408,9 +408,9 @@ namespace asiocurl {
 		auto l=control_->lock();
 
 		auto pair=handles_.emplace(std::piecewise_construct,std::forward_as_tuple(easy),std::forward_as_tuple(easy));
+		if (!pair.second) throw std::logic_error("Attempt to add duplicate easy handle");
 		auto iter=pair.first;
 		auto g=make_scope_exit([&] () noexcept {	handles_.erase(iter);	});
-		if (!pair.second) throw std::logic_error("Attempt to add duplicate easy handle");
 		auto & s=iter->second;
 		auto retr=s.promise.get_future();
 
