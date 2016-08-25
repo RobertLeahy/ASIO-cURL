@@ -32,9 +32,17 @@ if(DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 			add_linker_options(-fsanitize=address)
 		endif()
 	endif()
-	#	Suppress some of Clang's excessive warnings
+	#	Enable all warnings except a choice few on Clang
 	if (DEFINED CMAKE_CXX_COMPILER_ID AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		add_compile_options(-Wno-unused-private-field)
+		add_compile_options(-Weverything)
+		#	We don't care about C++98 compatibility: This is a C++14
+		#	library
+		add_compile_options(-Wno-c++98-compat)
+		#	These warnings are just noise
+		add_compile_options(-Wno-weak-vtables -Wno-padded)
+		#	curl_easy_setopt is apparently implemented in terms of
+		#	a recursive macro which sets this warning off
+		add_compile_options(-Wno-disabled-macro-expansion)
 	endif()
 else()
 	add_compile_options(-O2)
@@ -70,6 +78,11 @@ if((DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug") OR (DEFINED 
 	target_link_libraries(tests asiocurl)
 	if(NOT WIN32)
 		target_link_libraries(tests pthread)
+	endif()
+	#	Catch triggers -Wexit-time-destructors like crazy
+	#	so we turn it off only for the tests
+	if (DEFINED CMAKE_CXX_COMPILER_ID AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+		target_compile_options(tests PRIVATE -Wno-exit-time-destructors)
 	endif()
 	add_custom_target(tests_run ALL
 		COMMAND tests
