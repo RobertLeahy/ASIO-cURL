@@ -62,7 +62,17 @@ auto msg=curl.add(easy).get();
 
 ## Supported Compilers
 
-Currently only tested with GCC 5.x on Windows and Linux.
+The following compilers have been tested:
+
+### Linux
+
+- Clang 3.8
+- GCC 5.3.0
+- GCC 6.1.1
+
+### Windows
+
+- GCC 5.3.0
 
 ## Build
 
