@@ -24,9 +24,6 @@ if(DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_compile_options(-O0 -g -fno-inline -fno-omit-frame-pointer -Wall -Wpedantic -Wextra -Werror)
 	#	Address Sanitizer (non-Windows only)
 	if(NOT WIN32)
-		#	Address Sanitizer needs to be able to be turned off due
-		#	to the fact the AMD OpenCL CPU SDK doesn't play nice with
-		#	it
 		if(NOT DEFINED USE_ADDRESS_SANITIZER OR USE_ADDRESS_SANITIZER)
 			add_compile_options(-fsanitize=address)
 			add_linker_options(-fsanitize=address)
