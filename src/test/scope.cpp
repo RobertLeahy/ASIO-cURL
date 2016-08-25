@@ -22,7 +22,7 @@ namespace {
 		public:
 		
 		
-			functor () noexcept : ptr_(nullptr), i_(false) {	}
+			functor () = delete;
 			functor (bool & b) noexcept : ptr_(&b), i_(false) {	}
 			
 			
