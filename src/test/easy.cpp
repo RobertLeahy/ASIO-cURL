@@ -1,10 +1,10 @@
 #include <asiocurl/easy.hpp>
 
 
+#include <asiocurl/asio.hpp>
 #include <asiocurl/exception.hpp>
 #include <asiocurl/io_service.hpp>
 #include <asiocurl/optional.hpp>
-#include <boost/asio.hpp>
 #include <curl/curl.h>
 #include <thread>
 #include <catch.hpp>
@@ -19,14 +19,14 @@ namespace {
 		protected:
 
 
-			boost::asio::io_service ios;
+			asiocurl::asio::io_service ios;
 			asiocurl::io_service curl;
 
 
 		private:
 
 			
-			asiocurl::optional<boost::asio::io_service::work> work_;
+			asiocurl::optional<asiocurl::asio::io_service::work> work_;
 			std::thread t_;
 
 

@@ -6,8 +6,8 @@
 #pragma once
 
 
+#include "asio.hpp"
 #include "future.hpp"
-#include <boost/asio.hpp>
 #include <curl/curl.h>
 #include <cstddef>
 #include <exception>
@@ -20,7 +20,7 @@ namespace asiocurl {
 
 
 	/**
-	 *	Services curl easy handles using Boost.ASIO.
+	 *	Services curl easy handles using ASIO.
 	 */
 	class io_service {
 
@@ -107,7 +107,7 @@ namespace asiocurl {
 					bool read;
 					bool write;
 					std::shared_ptr<bool> closed;
-					boost::asio::ip::tcp::socket socket;
+					asio::ip::tcp::socket socket;
 
 
 					socket_state () = delete;
@@ -117,20 +117,20 @@ namespace asiocurl {
 					socket_state & operator = (socket_state &&) = delete;
 
 
-					socket_state (const boost::asio::ip::tcp::socket::protocol_type &, boost::asio::io_service &);
+					socket_state (const asio::ip::tcp::socket::protocol_type &, asio::io_service &);
 
 
 			};
 
 
-			boost::asio::io_service & ios_;
+			asio::io_service & ios_;
 			native_handle_type handle_;
 			using handles_type=std::unordered_map<CURL *,easy_state>;
 			handles_type handles_;
 			using sockets_type=std::unordered_map<curl_socket_t,socket_state>;
 			sockets_type sockets_;
 			std::shared_ptr<control> control_;
-			boost::asio::deadline_timer timer_;
+			asio::steady_timer timer_;
 
 
 			static curl_socket_t open (void *, curlsocktype, struct curl_sockaddr *) noexcept;
@@ -159,15 +159,15 @@ namespace asiocurl {
 
 			/**
 			 *	Creates a new io_service which uses a certain
-			 *	boost::asio::io_service for socket I/O and timeouts.
+			 *	asio::io_service for socket I/O and timeouts.
 			 *
 			 *	\param [in] ios
-			 *		The boost::asio::io_service with which this io_service
+			 *		The asio::io_service with which this io_service
 			 *		shall be associated.  This reference must remain valid
 			 *		for the lifetime of the io_service or the behaviour is
 			 *		undefined.
 			 */
-			explicit io_service (boost::asio::io_service & ios);
+			explicit io_service (asio::io_service & ios);
 
 
 			/**
@@ -177,7 +177,7 @@ namespace asiocurl {
 			 *
 			 *	Any pending asynchronous operations will be cancelled.  When
 			 *	those pending operations complete they will be no ops (i.e.
-			 *	it is not necessary to drain the boost::asio::io_service before
+			 *	it is not necessary to drain the asio::io_service before
 			 *	calling this destructor).
 			 */
 			~io_service () noexcept;
@@ -244,18 +244,18 @@ namespace asiocurl {
 
 
 			/**
-			 *	Returns the boost::asio::io_service associated with this
+			 *	Returns the asio::io_service associated with this
 			 *	object.
 			 *
 			 *	This method is named get_io_service rather than io_service
 			 *	(which would be in keeping with standard library naming
-			 *	conventions) for consistency with other classes in Boost.ASIO
+			 *	conventions) for consistency with other classes in ASIO
 			 *	which use the name get_io_service.
 			 *
 			 *	\return
-			 *		A reference to the associated boost::asio::io_service.
+			 *		A reference to the associated asio::io_service.
 			 */
-			boost::asio::io_service & get_io_service () const noexcept;
+			asio::io_service & get_io_service () const noexcept;
 
 
 			/**

@@ -1,10 +1,11 @@
+#include <asiocurl/asio.hpp>
 #include <asiocurl/configure.hpp>
 #include <asiocurl/exception.hpp>
 #include <asiocurl/future.hpp>
 #include <asiocurl/io_service.hpp>
 #include <asiocurl/scope.hpp>
-#include <boost/asio.hpp>
 #include <curl/curl.h>
+#include <chrono>
 #include <exception>
 #include <memory>
 #include <stdexcept>
@@ -96,7 +97,7 @@ namespace asiocurl {
 	}
 
 
-	io_service::socket_state::socket_state (const boost::asio::ip::tcp::socket::protocol_type & protocol, boost::asio::io_service & ios)
+	io_service::socket_state::socket_state (const asio::ip::tcp::socket::protocol_type & protocol, asio::io_service & ios)
 		:	what(CURL_POLL_NONE),
 			read(false),
 			write(false),
@@ -118,7 +119,7 @@ namespace asiocurl {
 
 		try {
 
-			socket_state ss((address->family==AF_INET) ? boost::asio::ip::tcp::v4() : boost::asio::ip::tcp::v6(),self.ios_);
+			socket_state ss((address->family==AF_INET) ? asio::ip::tcp::v4() : asio::ip::tcp::v6(),self.ios_);
 			auto native_handle=ss.socket.native_handle();
 			self.sockets_.emplace(native_handle,std::move(ss));
 
@@ -235,7 +236,9 @@ namespace asiocurl {
 
 			}
 
-			self.timer_.expires_from_now(boost::posix_time::millisec(timeout_ms));
+			std::chrono::milliseconds timeout_duration(timeout_ms);
+			auto timer_timeout=std::chrono::duration_cast<asio::steady_timer::duration>(timeout_duration);
+			self.timer_.expires_from_now(timer_timeout);
 			self.timer_.async_wait([&self,control=self.control_] (const auto &) {
 
 				auto l=control->lock();
@@ -331,7 +334,7 @@ namespace asiocurl {
 
 	void io_service::read (socket_state & ss) {
 
-		ss.socket.async_read_some(boost::asio::null_buffers{},[&,control=control_,closed=ss.closed] (const auto & ec, auto) {
+		ss.socket.async_read_some(asio::null_buffers{},[&,control=control_,closed=ss.closed] (const auto & ec, auto) {
 
 			auto l=control->lock();
 			if (!*control) return;
@@ -350,7 +353,7 @@ namespace asiocurl {
 
 	void io_service::write (socket_state & ss) {
 
-		ss.socket.async_write_some(boost::asio::null_buffers{},[&,control=control_,closed=ss.closed] (const auto & ec, auto) {
+		ss.socket.async_write_some(asio::null_buffers{},[&,control=control_,closed=ss.closed] (const auto & ec, auto) {
 
 			auto l=control->lock();
 			if (!*control) return;
@@ -367,7 +370,7 @@ namespace asiocurl {
 	}
 
 
-	io_service::io_service (boost::asio::io_service & ios) : ios_(ios), control_(std::make_shared<control>()), timer_(ios) {
+	io_service::io_service (asio::io_service & ios) : ios_(ios), control_(std::make_shared<control>()), timer_(ios) {
 
 		if (!(handle_=curl_multi_init())) throw error("curl_multi_init failed");
 		auto g=make_scope_exit([&] () noexcept {	multi_check(curl_multi_cleanup(handle_));	});
@@ -443,7 +446,7 @@ namespace asiocurl {
 	}
 
 
-	boost::asio::io_service & io_service::get_io_service () const noexcept {
+	asio::io_service & io_service::get_io_service () const noexcept {
 
 		return ios_;
 

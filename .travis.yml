@@ -10,9 +10,10 @@ matrix:
     exclude:
         -   os: linux
     include:
+        #   Boost.ASIO
         -   os: linux
             compiler: clang
-            env: COMPILER="clang++-3.8 -stdlib=libc++" USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=0 PATCH_ASIO=1
+            env: COMPILER="clang++-3.8 -stdlib=libc++" USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=0 PATCH_ASIO=1 USE_BOOST_ASIO=1
             addons: &clang_addons
                 apt:
                     sources:
@@ -24,11 +25,11 @@ matrix:
                         -   libc++-dev
         -   os: linux
             compiler: clang
-            env: COMPILER="clang++-3.8 -stdlib=libc++" USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=0 PATCH_ASIO=1
+            env: COMPILER="clang++-3.8 -stdlib=libc++" USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=0 PATCH_ASIO=1 USE_BOOST_ASIO=1
             addons: *clang_addons
         -   os: linux
             compiler: gcc
-            env: COMPILER=g++-5 USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=1
+            env: COMPILER=g++-5 USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=1 USE_BOOST_ASIO=1
             addons: &gcc5_addons
                 apt:
                     sources:
@@ -39,11 +40,11 @@ matrix:
                         -   g++-5
         -   os: linux
             compiler: gcc
-            env: COMPILER=g++-5 USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=1
+            env: COMPILER=g++-5 USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=1 USE_BOOST_ASIO=1
             addons: *gcc5_addons
         -   os: linux
             compiler: gcc
-            env: COMPILER=g++-6 USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=0
+            env: COMPILER=g++-6 USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=0 USE_BOOST_ASIO=1
             addons: &gcc6_addons
                 apt:
                     sources:
@@ -54,14 +55,73 @@ matrix:
                         -   g++-6
         -   os: linux
             compiler: gcc
-            env: COMPILER=g++-6 USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=0
+            env: COMPILER=g++-6 USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=0 USE_BOOST_ASIO=1
+            addons: *gcc6_addons
+        #   ASIO
+        -   os: linux
+            compiler: clang
+            env: COMPILER="clang++-3.8 -stdlib=libc++" USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=0 PATCH_ASIO=1 USE_BOOST_ASIO=0
+            addons:
+                apt:
+                    sources:
+                        -   llvm-toolchain-precise-3.8
+                    packages:
+                        -   libcurl4-openssl-dev
+                        -   clang-3.8
+                        -   libc++-dev
+        -   os: linux
+            compiler: clang
+            env: COMPILER="clang++-3.8 -stdlib=libc++" USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=0 PATCH_ASIO=1 USE_BOOST_ASIO=0
+            addons: *clang_addons
+        -   os: linux
+            compiler: gcc
+            env: COMPILER=g++-5 USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=1 USE_BOOST_ASIO=0
+            addons:
+                apt:
+                    sources:
+                        -   ubuntu-toolchain-r-test
+                    packages:
+                        -   libcurl4-openssl-dev
+                        -   g++-5
+        -   os: linux
+            compiler: gcc
+            env: COMPILER=g++-5 USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=1 USE_BOOST_ASIO=0
+            addons: *gcc5_addons
+        -   os: linux
+            compiler: gcc
+            env: COMPILER=g++-6 USE_BOOST_FUTURE=0 USE_ADDRESS_SANITIZER=0 USE_BOOST_ASIO=0
+            addons:
+                apt:
+                    sources:
+                        -   ubuntu-toolchain-r-test
+                    packages:
+                        -   libcurl4-openssl-dev
+                        -   g++-6
+        -   os: linux
+            compiler: gcc
+            env: COMPILER=g++-6 USE_BOOST_FUTURE=1 USE_ADDRESS_SANITIZER=0 USE_BOOST_ASIO=0
             addons: *gcc6_addons
 before_install:
-    -   git clone https://github.com/philsquared/Catch.git
+    -   git clone --depth 1 https://github.com/philsquared/Catch.git
     -   sudo cp ./Catch/single_include/catch.hpp /usr/local/include
-    -   'if [ ${PATCH_ASIO} ]; then sudo sed -i -r "s/^#include <cstddef>/#include <stddef.h>/g" /usr/include/boost/asio/local/detail/endpoint.hpp; fi'
+    -   if [ ${USE_BOOST_ASIO} -eq 0 ]; then
+            git clone --depth 1 https://github.com/chriskohlhoff/asio.git;
+            sudo cp ./asio/asio/include/asio.hpp /usr/local/include;
+            sudo cp -r ./asio/asio/include/asio /usr/local/include;
+        fi
+    -   'if [ ${PATCH_ASIO} ]; then
+            if [ ${USE_BOOST_ASIO} -eq 1 ]; then
+                sudo sed -i -r "s/^#include <cstddef>/#include <stddef.h>/g" /usr/include/boost/asio/local/detail/endpoint.hpp;
+            else
+                sudo sed -i -r "s/^#include <cstddef>/#include <stddef.h>/g" /usr/local/include/asio/local/detail/endpoint.hpp;
+            fi
+        fi'
 script:
     -   export CXX=${COMPILER}
-    -   grep "define BOOST_LIB_VERSION" < /usr/include/boost/version.hpp
-    -   cmake . -DCMAKE_BUILD_TYPE=Debug -DUSE_BOOST_FUTURE=${USE_BOOST_FUTURE} -DUSE_ADDRESS_SANITIZER=${USE_ADDRESS_SANITIZER}
+    -   if [ ${USE_BOOST_ASIO} -eq 1 ]; then
+            grep "define BOOST_LIB_VERSION" < /usr/include/boost/version.hpp;
+        else
+            grep "define ASIO_VERSION" < /usr/local/include/asio/version.hpp;
+        fi
+    -   cmake . -DCMAKE_BUILD_TYPE=Debug -DUSE_BOOST_FUTURE=${USE_BOOST_FUTURE} -DUSE_ADDRESS_SANITIZER=${USE_ADDRESS_SANITIZER} -DUSE_BOOST_ASIO=${USE_BOOST_ASIO}
     -   make VERBOSE=1

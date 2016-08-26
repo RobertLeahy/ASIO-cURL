@@ -1,10 +1,10 @@
 #include <asiocurl/io_service.hpp>
 
 
+#include <asiocurl/asio.hpp>
 #include <asiocurl/easy.hpp>
 #include <asiocurl/exception.hpp>
 #include <asiocurl/optional.hpp>
-#include <boost/asio.hpp>
 #include <curl/curl.h>
 #include <sstream>
 #include <stdexcept>
@@ -22,7 +22,7 @@ namespace {
 		protected:
 
 
-			boost::asio::io_service ios;
+			asiocurl::asio::io_service ios;
 
 
 		private:
@@ -59,7 +59,7 @@ namespace {
 		private:
 
 
-			asiocurl::optional<boost::asio::io_service::work> work_;
+			asiocurl::optional<asiocurl::asio::io_service::work> work_;
 			std::thread t_;
 
 
@@ -73,7 +73,7 @@ namespace {
 			runner & operator = (runner &&) = delete;
 
 
-			explicit runner (boost::asio::io_service & ios) : work_(asiocurl::in_place,ios) {
+			explicit runner (asiocurl::asio::io_service & ios) : work_(asiocurl::in_place,ios) {
 
 				t_=std::thread([&ios] () noexcept {
 
@@ -230,7 +230,7 @@ SCENARIO_METHOD(fixture,"Transfers managed by an asiocurl::io_service object com
 		long v=1;
 		set(easy,CURLOPT_VERBOSE,v);
 
-		WHEN("It is added to an asiocurl::io_service and boost::asio::io_service::run is invoked") {
+		WHEN("It is added to an asiocurl::io_service and asiocurl::asio::io_service::run is invoked") {
 
 			auto f=curl.add(easy);
 			runner r(ios);
@@ -288,7 +288,7 @@ SCENARIO_METHOD(fixture,"Transfers managed by an asiocurl::io_service object com
 		long timeout_ms=750;
 		set(easy,CURLOPT_TIMEOUT_MS,timeout_ms);
 
-		WHEN("It is added to an asiocurl::io_service and boost::asio::io_service::run is invoked") {
+		WHEN("It is added to an asiocurl::io_service and asiocurl::asio::io_service::run is invoked") {
 
 			auto f=curl.add(easy);
 			runner r(ios);

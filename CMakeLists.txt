@@ -49,6 +49,10 @@ if(NOT DEFINED USE_BOOST_FUTURE)
 	set(USE_BOOST_FUTURE 1)
 endif()
 
+if(NOT DEFINED USE_BOOST_ASIO)
+	set(USE_BOOST_ASIO 1)
+endif()
+
 configure_file(src/configure.hpp.in include/asiocurl/configure.hpp)
 
 add_library(asiocurl SHARED
@@ -57,12 +61,15 @@ add_library(asiocurl SHARED
 	src/init.cpp
 	src/io_service.cpp
 )
-target_link_libraries(asiocurl curl boost_system)
+target_link_libraries(asiocurl curl)
 if (WIN32)
 	target_link_libraries(asiocurl curldll ws2_32)
 endif()
 if(USE_BOOST_FUTURE)
 	target_link_libraries(asiocurl boost_thread)
+endif()
+if(USE_BOOST_ASIO OR USE_BOOST_FUTURE)
+	target_link_libraries(asiocurl boost_system)
 endif()
 
 if((DEFINED CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE STREQUAL "Debug") OR (DEFINED BUILD_TESTS AND BUILD_TESTS))
