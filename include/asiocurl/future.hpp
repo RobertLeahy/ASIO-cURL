@@ -3,6 +3,9 @@
  */
 
 
+#pragma once
+
+
 #include "configure.hpp"
 
 
