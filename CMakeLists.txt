@@ -17,6 +17,10 @@ endfunction()
 #	Where our project's headers live
 include_directories(include)
 
+#	We need libcurl
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
+
 #	General command line arguments to the compiler that should be present
 #	on all platforms
 add_compile_options(-std=c++1z)
@@ -61,9 +65,9 @@ add_library(asiocurl SHARED
 	src/init.cpp
 	src/io_service.cpp
 )
-target_link_libraries(asiocurl curl)
+target_link_libraries(asiocurl ${CURL_LIBRARIES})
 if (WIN32)
-	target_link_libraries(asiocurl curldll ws2_32)
+	target_link_libraries(asiocurl ws2_32)
 endif()
 if(USE_BOOST_FUTURE)
 	target_link_libraries(asiocurl boost_thread)
