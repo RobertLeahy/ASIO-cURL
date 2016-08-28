@@ -108,4 +108,4 @@ If you would like to build and run the tests call CMake with `-DBUILD_TESTS=1`. 
 
 ## Documentation
 
-To full build documentation simply run [`doxygen`](http://www.stack.nl/~dimitri/doxygen/).
+To build full documentation simply run [`doxygen`](http://www.stack.nl/~dimitri/doxygen/).
